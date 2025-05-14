@@ -28,7 +28,7 @@ const ObserveWellnessOutputSchema = z.object({
     .describe('A boolean value indicating whether a face was clearly detected in the image.'),
   observations: z
     .string()
-    .describe('General, non-medical visual observations about the person. This will explain why no observation could be made if isFaceDetected is false or if the image is unsuitable.'),
+    .describe('General, non-medical visual observations about the person. This will explain why no observation could be made if isFaceDetected is false or if the image is unsuitable. If certain visual cues are present, it may suggest seeking medical attention.'),
   disclaimer: z
     .string()
     .describe('A mandatory disclaimer about the non-medical nature of this feature.'),
@@ -46,16 +46,17 @@ const prompt = ai.definePrompt({
   input: {schema: ObserveWellnessInputSchema},
   output: {schema: ObserveWellnessOutputSchema},
   prompt: `You are an AI assistant demonstrating visual observation capabilities for general wellness.
-Analyze the provided image of a face.
-Your primary goal is to provide GENERAL, NON-MEDICAL visual observations.
+Analyze the provided image of a face. Your primary goal is to provide GENERAL, NON-MEDICAL visual observations.
+DO NOT attempt to diagnose any specific illness or medical condition.
 
 If a face is clearly visible and suitable for observation:
 1. Set isFaceDetected to true.
-2. In the 'observations' field, describe general appearance cues. For example, you can mention if the person appears "alert", "tired", "skin tone appears even", or "eyes seem clear".
-   DO NOT mention or speculate about any specific illnesses, symptoms (e.g., fever, cough, runny nose, specific skin conditions), or medical conditions.
-   DO NOT attempt to diagnose.
-   Focus SOLELY on very general visual characteristics.
-   If the face shows no particular distinguishing general cues, you can state something like "General facial appearance observed as typical."
+2. Look for the following visual cues: paler skin, paler lips, a more swollen face, droopier corners of the mouth, more hanging eyelids, redder eyes, less glossy or patchy skin, or a generally tired appearance.
+3. In the 'observations' field:
+    a. If several of these cues are noticeably present: Describe the observed cues (e.g., "Observed paler skin, redder eyes, and a tired appearance."). Then, add the sentence: "If you are feeling unwell or have concerns about these observations, it is advisable to seek medical attention."
+    b. If these specific cues are not prominent or absent: Describe general appearance cues (e.g., "Appears alert," "Skin tone appears even," "Eyes seem clear," "General facial appearance observed as typical."). Do not suggest medical attention in this case unless the specific cues mentioned above are present.
+   
+   DO NOT mention or speculate about any specific illnesses or medical conditions (e.g., fever, flu, cold, specific skin diseases). Only describe the visual cues if present and make the general suggestion for medical attention if those cues are observed.
 
 If no face is detected, the image is unclear, or not suitable for observation (e.g., too blurry, object instead of a face):
 1. Set isFaceDetected to false.
@@ -82,3 +83,4 @@ const observeWellnessFlow = ai.defineFlow(
     };
   }
 );
+
