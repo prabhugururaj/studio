@@ -14,14 +14,14 @@ body {
     --card-foreground: 210 50% 20%;
     --popover: 0 0% 100%;
     --popover-foreground: 210 50% 20%;
-    --primary: 220 90% 60%;    /* Vibrant Blue */
+    --primary: 220 90% 35%;    /* Darker Vibrant Blue */
     --primary-foreground: 220 50% 98%; /* Light foreground for primary */
     --secondary: 140 70% 55%;  /* Vibrant Green */
     --secondary-foreground: 140 50% 98%; /* Light foreground for secondary */
     --muted: 210 30% 94%; /* Softer muted background */
     --muted-foreground: 210 25% 55%; /* Readable text on muted */
-    --accent: 45 100% 60%;     /* Vibrant Orange/Yellow */
-    --accent-foreground: 45 70% 20%; /* Darker foreground for accent */
+    --accent: 45 100% 35%;     /* Darker Vibrant Orange/Yellow */
+    --accent-foreground: 45 70% 95%; /* Light foreground for dark accent */
     --destructive: 0 84.2% 60.2%; /* Standard destructive red */
     --destructive-foreground: 0 0% 98%; /* Light text on destructive */
     --border: 210 20% 80%; /* Softer border */
@@ -49,13 +49,13 @@ body {
     --card-foreground: 220 70% 90%;
     --popover: 220 30% 8%; /* Darker for popovers */
     --popover-foreground: 220 70% 90%;
-    --primary: 220 95% 65%;    /* Vibrant Blue for dark mode */
+    --primary: 220 95% 65%;    /* Vibrant Blue for dark mode (used for heading gradient, should be light) */
     --primary-foreground: 220 30% 10%; /* Dark foreground for primary on dark */
     --secondary: 140 75% 60%;  /* Vibrant Green for dark mode */
     --secondary-foreground: 140 30% 10%; /* Dark foreground for secondary on dark */
     --muted: 220 20% 20%; /* Darker muted */
     --muted-foreground: 220 30% 70%;
-    --accent: 45 100% 65%;     /* Vibrant Orange/Yellow for dark mode */
+    --accent: 45 100% 65%;     /* Vibrant Orange/Yellow for dark mode (used for heading gradient, should be light) */
     --accent-foreground: 45 30% 10%; /* Dark foreground for accent on dark */
     --destructive: 0 70% 55%; /* Slightly more vibrant destructive for dark mode */
     --destructive-foreground: 0 0% 98%;
