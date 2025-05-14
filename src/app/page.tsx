@@ -7,9 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import StressAnalyzer from '@/components/stress-analyzer';
 import MoodBooster from '@/components/mood-booster';
 import SpellingLearner from '@/components/spelling-learner';
-import PostureAnalyzer from '@/components/posture-analyzer'; // Import new component
+import PostureAnalyzer from '@/components/posture-analyzer';
+import WellnessObserver from '@/components/wellness-observer'; // Import new component
 import type { GenerateMoodBoostersOutput } from '@/ai/flows/generate-mood-boosters';
-import { Bot, ScanText, Smile, PersonStanding } from 'lucide-react'; // Added PersonStanding
+import type { ObserveWellnessOutput } from '@/ai/flows/observe-wellness'; // Import new type
+import { Bot, ScanText, Smile, PersonStanding, Activity } from 'lucide-react'; // Added Activity
 
 export default function AiWellnessLearningPage() {
   const [stressScore, setStressScore] = useState<number | null>(null);
@@ -32,6 +34,11 @@ export default function AiWellnessLearningPage() {
   const [isAnalyzingPosture, setIsAnalyzingPosture] = useState(false);
   const [postureAnalysisMessage, setPostureAnalysisMessage] = useState<string | null>(null);
   
+  // State for Wellness Observer
+  const [wellnessObservationResult, setWellnessObservationResult] = useState<ObserveWellnessOutput | null>(null);
+  const [isObservingWellness, setIsObservingWellness] = useState(false);
+  const [wellnessObservationError, setWellnessObservationError] = useState<string | null>(null);
+
   const { toast } = useToast();
 
   const handleStressAnalyzed = (score: number, analysis: string) => {
@@ -76,11 +83,10 @@ export default function AiWellnessLearningPage() {
     toast({ variant: "destructive", title: "Object Detection Error", description: errorMessage });
   };
 
-  // Handlers for Posture Analyzer
   const handlePostureAnalyzed = (score: number, analysis: string) => {
     setPostureScore(score);
     setPostureAnalysisText(analysis);
-    setPostureAnalysisMessage(null); // Clear any previous error/reason
+    setPostureAnalysisMessage(null); 
     toast({ title: "Posture Analysis Complete!", description: `Your posture score is ${score}.` });
   };
 
@@ -89,6 +95,23 @@ export default function AiWellnessLearningPage() {
     setPostureAnalysisText(null);
     setPostureAnalysisMessage(message);
     toast({ variant: "destructive", title: "Posture Analysis Issue", description: message });
+  };
+
+  // Handlers for Wellness Observer
+  const handleWellnessObservationComplete = (result: ObserveWellnessOutput) => {
+    setWellnessObservationResult(result);
+    setWellnessObservationError(null);
+    if (result.isFaceDetected) {
+      toast({ title: "Wellness Observation Complete!", description: "Check the general observations." });
+    } else {
+      toast({ variant: "default", title: "Observation Note", description: result.observations || "Could not make an observation." });
+    }
+  };
+
+  const handleWellnessObservationError = (message: string) => {
+    setWellnessObservationResult(null);
+    setWellnessObservationError(message);
+    toast({ variant: "destructive", title: "Wellness Observation Error", description: message });
   };
 
 
@@ -108,14 +131,17 @@ export default function AiWellnessLearningPage() {
           AI Wellness & Learning Hub
         </h1>
         <p className="text-muted-foreground mt-2 text-lg md:text-xl max-w-2xl mx-auto">
-          Analyze stress, improve posture, boost your mood, or learn spelling with our AI tools.
+          Analyze stress, observe wellness, improve posture, boost your mood, or learn spelling with our AI tools.
         </p>
       </header>
 
       <Tabs defaultValue="analyzer" className="w-full max-w-3xl">
-        <TabsList className="grid w-full grid-cols-4 rounded-lg p-1 bg-muted shadow-sm">
+        <TabsList className="grid w-full grid-cols-5 rounded-lg p-1 bg-muted shadow-sm">
           <TabsTrigger value="analyzer" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <Smile className="w-4 h-4 mr-2" /> Stress Analyzer
+          </TabsTrigger>
+           <TabsTrigger value="wellness" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
+            <Activity className="w-4 h-4 mr-2" /> Wellness Observer
           </TabsTrigger>
           <TabsTrigger value="posture" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <PersonStanding className="w-4 h-4 mr-2" /> Posture Analyzer
@@ -136,6 +162,17 @@ export default function AiWellnessLearningPage() {
             setIsAnalyzing={setIsAnalyzingStress} 
             currentStressScore={stressScore}
             currentAnalysisText={analysisText}
+          />
+        </TabsContent>
+
+        <TabsContent value="wellness" className="mt-6">
+          <WellnessObserver
+            onObservationComplete={handleWellnessObservationComplete}
+            onObservationError={handleWellnessObservationError}
+            isProcessing={isObservingWellness}
+            setIsProcessing={setIsObservingWellness}
+            observationResult={wellnessObservationResult}
+            lastErrorMessage={wellnessObservationError}
           />
         </TabsContent>
 
@@ -177,7 +214,7 @@ export default function AiWellnessLearningPage() {
       </Tabs>
        <footer className="mt-12 text-center text-sm text-muted-foreground">
         <p>&copy; {new Date().getFullYear()} AI Wellness & Learning Hub. All rights reserved.</p>
-        <p>Powered by Genkit and Next.js.</p>
+        <p>Powered by Genkit and Next.js. Wellness features are for informational and demonstrative purposes only and not medical advice.</p>
       </footer>
     </div>
   );
