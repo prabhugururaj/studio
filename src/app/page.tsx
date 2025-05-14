@@ -9,9 +9,10 @@ import StressAnalyzer from '@/components/stress-analyzer';
 import SpellingLearner from '@/components/spelling-learner';
 import PostureAnalyzer from '@/components/posture-analyzer';
 import WellnessObserver from '@/components/wellness-observer';
+import SignLanguageInterpreter from '@/components/sign-language-interpreter'; // New component
 import type { GenerateMoodBoostersOutput } from '@/ai/flows/generate-mood-boosters';
 import type { ObserveWellnessOutput } from '@/ai/flows/observe-wellness';
-import { Bot, ScanText, Smile, PersonStanding, Activity } from 'lucide-react';
+import { Bot, ScanText, Smile, PersonStanding, Activity, Hand } from 'lucide-react'; // Added Hand icon
 
 export default function AiWellnessLearningPage() {
   const [stressScore, setStressScore] = useState<number | null>(null);
@@ -39,13 +40,19 @@ export default function AiWellnessLearningPage() {
   const [isObservingWellness, setIsObservingWellness] = useState(false);
   const [wellnessObservationError, setWellnessObservationError] = useState<string | null>(null);
 
+  // State for Sign Language Interpreter
+  const [interpretedSignText, setInterpretedSignText] = useState<string | null>(null);
+  const [capturedSignImageUri, setCapturedSignImageUri] = useState<string | null>(null);
+  const [isInterpretingSign, setIsInterpretingSign] = useState(false);
+  const [signInterpretationMessage, setSignInterpretationMessage] = useState<string | null>(null);
+
+
   const { toast } = useToast();
 
   const handleStressAnalyzed = (score: number, analysis: string) => {
     setStressScore(score);
     setAnalysisText(analysis);
     toast({ title: "Stress Analysis Complete!", description: `Your stress score is ${score}.` });
-    // Suggest mood boosters directly if score is high
     if (score > 50) {
         toast({
             title: "High Stress Detected",
@@ -114,6 +121,20 @@ export default function AiWellnessLearningPage() {
     toast({ variant: "destructive", title: "Wellness Observation Error", description: message });
   };
 
+  const handleSignInterpreted = (text: string, imageUri: string) => {
+    setInterpretedSignText(text);
+    setCapturedSignImageUri(imageUri);
+    setSignInterpretationMessage(null);
+    toast({ title: "Sign Interpreted!", description: `Detected: ${text}` });
+  };
+
+  const handleSignInterpretationError = (message: string) => {
+    setInterpretedSignText(null);
+    setCapturedSignImageUri(null);
+    setSignInterpretationMessage(message);
+    toast({ variant: "destructive", title: "Sign Interpretation Issue", description: message });
+  };
+
 
   return (
     <div className="container mx-auto px-2 py-8 md:px-4 min-h-screen flex flex-col items-center">
@@ -136,7 +157,7 @@ export default function AiWellnessLearningPage() {
       </header>
 
       <Tabs defaultValue="analyzer" className="w-full max-w-3xl">
-        <TabsList className="grid w-full grid-cols-4 rounded-lg p-1 bg-muted shadow-sm">
+        <TabsList className="grid w-full grid-cols-5 rounded-lg p-1 bg-muted shadow-sm"> {/* Changed to grid-cols-5 */}
           <TabsTrigger value="analyzer" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <Smile className="w-4 h-4 mr-2" /> Stress Analyzer
           </TabsTrigger>
@@ -145,6 +166,9 @@ export default function AiWellnessLearningPage() {
           </TabsTrigger>
           <TabsTrigger value="posture" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <PersonStanding className="w-4 h-4 mr-2" /> Posture Analyzer
+          </TabsTrigger>
+          <TabsTrigger value="signlearner" className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-md rounded-md transition-all"> {/* New Tab */}
+            <Hand className="w-4 h-4 mr-2" /> Sign Learner
           </TabsTrigger>
           <TabsTrigger value="kidszone" className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <ScanText className="w-4 h-4 mr-2" /> Kids Zone
@@ -159,7 +183,6 @@ export default function AiWellnessLearningPage() {
             setIsAnalyzing={setIsAnalyzingStress} 
             currentStressScore={stressScore}
             currentAnalysisText={analysisText}
-            // MoodBooster props
             onBoostersGenerated={handleBoostersGenerated}
             onBoostingError={handleBoostingError}
             isBoostingMood={isBoostingMood}
@@ -188,6 +211,18 @@ export default function AiWellnessLearningPage() {
             analyzedScore={postureScore}
             analyzedText={postureAnalysisText}
             analysisMessage={postureAnalysisMessage}
+          />
+        </TabsContent>
+
+        <TabsContent value="signlearner" className="mt-6"> {/* New Tab Content */}
+          <SignLanguageInterpreter
+            onSignInterpreted={handleSignInterpreted}
+            onInterpretationError={handleSignInterpretationError}
+            isInterpreting={isInterpretingSign}
+            setIsInterpreting={setIsInterpretingSign}
+            interpretedText={interpretedSignText}
+            capturedSignImageUri={capturedSignImageUri}
+            interpretationMessage={signInterpretationMessage}
           />
         </TabsContent>
 
