@@ -201,7 +201,7 @@ const SpellingLearner: React.FC<SpellingLearnerProps> = ({
                     </p>
                     <p className="text-lg mt-2">
                       <span className="font-semibold text-card-foreground">Spelling:</span>{' '}
-                      <span className="text-accent-foreground font-mono tracking-widest text-2xl">{detectedObjectSpelling}</span>
+                      <span className="text-primary font-mono tracking-widest text-2xl">{detectedObjectSpelling}</span>
                     </p>
                   </div>
                 </div>
