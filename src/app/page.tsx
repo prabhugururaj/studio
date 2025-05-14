@@ -7,16 +7,17 @@ import { useToast } from "@/hooks/use-toast";
 import StressAnalyzer from '@/components/stress-analyzer';
 import MoodBooster from '@/components/mood-booster';
 import SpellingLearner from '@/components/spelling-learner';
+import PostureAnalyzer from '@/components/posture-analyzer'; // Import new component
 import type { GenerateMoodBoostersOutput } from '@/ai/flows/generate-mood-boosters';
-import { Bot, ScanText, Smile } from 'lucide-react';
+import { Bot, ScanText, Smile, PersonStanding } from 'lucide-react'; // Added PersonStanding
 
 export default function AiWellnessLearningPage() {
   const [stressScore, setStressScore] = useState<number | null>(null);
   const [analysisText, setAnalysisText] = useState<string>("");
   const [moodBoosters, setMoodBoosters] = useState<GenerateMoodBoostersOutput['suggestions'] | null>(null);
 
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isBoosting, setIsBoosting] = useState(false);
+  const [isAnalyzingStress, setIsAnalyzingStress] = useState(false);
+  const [isBoostingMood, setIsBoostingMood] = useState(false);
 
   // State for Spelling Learner
   const [detectedObjectName, setDetectedObjectName] = useState<string | null>(null);
@@ -24,13 +25,18 @@ export default function AiWellnessLearningPage() {
   const [capturedObjectImageUri, setCapturedObjectImageUri] = useState<string | null>(null);
   const [isDetectingObject, setIsDetectingObject] = useState(false);
   const [objectDetectionReason, setObjectDetectionReason] = useState<string | null>(null);
+
+  // State for Posture Analyzer
+  const [postureScore, setPostureScore] = useState<number | null>(null);
+  const [postureAnalysisText, setPostureAnalysisText] = useState<string | null>(null);
+  const [isAnalyzingPosture, setIsAnalyzingPosture] = useState(false);
+  const [postureAnalysisMessage, setPostureAnalysisMessage] = useState<string | null>(null);
   
   const { toast } = useToast();
 
   const handleStressAnalyzed = (score: number, analysis: string) => {
     setStressScore(score);
     setAnalysisText(analysis);
-    // setIsAnalyzing is handled within StressAnalyzer
     toast({ title: "Stress Analysis Complete!", description: `Your stress score is ${score}.` });
     if (score > 50) {
         toast({
@@ -41,28 +47,24 @@ export default function AiWellnessLearningPage() {
     }
   };
 
-  const handleAnalysisError = (errorMessage: string) => {
-    // setIsAnalyzing is handled within StressAnalyzer
-    toast({ variant: "destructive", title: "Analysis Error", description: errorMessage });
+  const handleStressAnalysisError = (errorMessage: string) => {
+    toast({ variant: "destructive", title: "Stress Analysis Error", description: errorMessage });
   };
 
   const handleBoostersGenerated = (boosters: GenerateMoodBoostersOutput['suggestions']) => {
     setMoodBoosters(boosters);
-    // setIsBoosting is handled within MoodBooster
     toast({ title: "Mood Boosters Ready!", description: "Check your personalized suggestions." });
   };
 
   const handleBoostingError = (errorMessage: string) => {
-    // setIsBoosting is handled within MoodBooster
     toast({ variant: "destructive", title: "Mood Booster Error", description: errorMessage });
   };
 
-  // Handlers for Spelling Learner
   const handleObjectDetected = (name: string, spelling: string, imageUri: string) => {
     setDetectedObjectName(name);
     setDetectedObjectSpelling(spelling);
     setCapturedObjectImageUri(imageUri);
-    setObjectDetectionReason(null); // Clear any previous error/reason
+    setObjectDetectionReason(null);
     toast({ title: "Object Detected!", description: `We found a ${name}!` });
   };
 
@@ -72,6 +74,21 @@ export default function AiWellnessLearningPage() {
     setCapturedObjectImageUri(null);
     setObjectDetectionReason(errorMessage);
     toast({ variant: "destructive", title: "Object Detection Error", description: errorMessage });
+  };
+
+  // Handlers for Posture Analyzer
+  const handlePostureAnalyzed = (score: number, analysis: string) => {
+    setPostureScore(score);
+    setPostureAnalysisText(analysis);
+    setPostureAnalysisMessage(null); // Clear any previous error/reason
+    toast({ title: "Posture Analysis Complete!", description: `Your posture score is ${score}.` });
+  };
+
+  const handlePostureAnalysisError = (message: string) => {
+    setPostureScore(null);
+    setPostureAnalysisText(null);
+    setPostureAnalysisMessage(message);
+    toast({ variant: "destructive", title: "Posture Analysis Issue", description: message });
   };
 
 
@@ -91,14 +108,17 @@ export default function AiWellnessLearningPage() {
           AI Wellness & Learning Hub
         </h1>
         <p className="text-muted-foreground mt-2 text-lg md:text-xl max-w-2xl mx-auto">
-          Analyze stress, boost your mood, or learn spelling with our AI tools.
+          Analyze stress, improve posture, boost your mood, or learn spelling with our AI tools.
         </p>
       </header>
 
       <Tabs defaultValue="analyzer" className="w-full max-w-3xl">
-        <TabsList className="grid w-full grid-cols-3 rounded-lg p-1 bg-muted shadow-sm">
+        <TabsList className="grid w-full grid-cols-4 rounded-lg p-1 bg-muted shadow-sm">
           <TabsTrigger value="analyzer" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <Smile className="w-4 h-4 mr-2" /> Stress Analyzer
+          </TabsTrigger>
+          <TabsTrigger value="posture" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
+            <PersonStanding className="w-4 h-4 mr-2" /> Posture Analyzer
           </TabsTrigger>
           <TabsTrigger value="booster" className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-md rounded-md transition-all">
             Mood Improvement
@@ -111,11 +131,23 @@ export default function AiWellnessLearningPage() {
         <TabsContent value="analyzer" className="mt-6">
           <StressAnalyzer
             onStressAnalyzed={handleStressAnalyzed}
-            onAnalysisError={handleAnalysisError}
-            isAnalyzing={isAnalyzing}
-            setIsAnalyzing={setIsAnalyzing} 
+            onAnalysisError={handleStressAnalysisError}
+            isAnalyzing={isAnalyzingStress}
+            setIsAnalyzing={setIsAnalyzingStress} 
             currentStressScore={stressScore}
             currentAnalysisText={analysisText}
+          />
+        </TabsContent>
+
+        <TabsContent value="posture" className="mt-6">
+          <PostureAnalyzer
+            onPostureAnalyzed={handlePostureAnalyzed}
+            onAnalysisError={handlePostureAnalysisError}
+            isProcessing={isAnalyzingPosture}
+            setIsProcessing={setIsAnalyzingPosture}
+            analyzedScore={postureScore}
+            analyzedText={postureAnalysisText}
+            analysisMessage={postureAnalysisMessage}
           />
         </TabsContent>
 
@@ -124,8 +156,8 @@ export default function AiWellnessLearningPage() {
             stressScore={stressScore}
             onBoostersGenerated={handleBoostersGenerated}
             onBoostingError={handleBoostingError}
-            isBoosting={isBoosting}
-            setIsBoosting={setIsBoosting}
+            isBoosting={isBoostingMood}
+            setIsBoosting={setIsBoostingMood}
             currentBoosters={moodBoosters}
           />
         </TabsContent>
