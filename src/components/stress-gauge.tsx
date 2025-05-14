@@ -17,9 +17,9 @@ const StressGauge: React.FC<StressGaugeProps> = ({ score }) => {
   };
 
   // Determine text color based on score using theme semantic colors
-  let textColorClass = "text-secondary-foreground"; // Dark Green from theme for Low Stress
-  if (score > 33 && score <= 66) textColorClass = "text-accent-foreground"; // Dark Yellow/Brown from theme for Moderate Stress
-  else if (score > 66) textColorClass = "text-destructive"; // Red from theme for High Stress
+  let textColorClass = "text-secondary"; // Uses the base secondary color (e.g., green) which is darker
+  if (score > 33 && score <= 66) textColorClass = "text-accent"; // Uses the base accent color (e.g., orange/yellow) which is darker
+  else if (score > 66) textColorClass = "text-destructive"; // Uses the destructive color (red)
 
 
   return (
