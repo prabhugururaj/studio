@@ -5,13 +5,13 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import StressAnalyzer from '@/components/stress-analyzer';
-import MoodBooster from '@/components/mood-booster';
+// MoodBooster component will be imported and used by StressAnalyzer directly
 import SpellingLearner from '@/components/spelling-learner';
 import PostureAnalyzer from '@/components/posture-analyzer';
-import WellnessObserver from '@/components/wellness-observer'; // Import new component
+import WellnessObserver from '@/components/wellness-observer';
 import type { GenerateMoodBoostersOutput } from '@/ai/flows/generate-mood-boosters';
-import type { ObserveWellnessOutput } from '@/ai/flows/observe-wellness'; // Import new type
-import { Bot, ScanText, Smile, PersonStanding, Activity } from 'lucide-react'; // Added Activity
+import type { ObserveWellnessOutput } from '@/ai/flows/observe-wellness';
+import { Bot, ScanText, Smile, PersonStanding, Activity } from 'lucide-react';
 
 export default function AiWellnessLearningPage() {
   const [stressScore, setStressScore] = useState<number | null>(null);
@@ -21,7 +21,7 @@ export default function AiWellnessLearningPage() {
   const [isAnalyzingStress, setIsAnalyzingStress] = useState(false);
   const [isBoostingMood, setIsBoostingMood] = useState(false);
 
-  // State for Spelling Learner
+  // State for Spelling Learner (Kids Zone)
   const [detectedObjectName, setDetectedObjectName] = useState<string | null>(null);
   const [detectedObjectSpelling, setDetectedObjectSpelling] = useState<string | null>(null);
   const [capturedObjectImageUri, setCapturedObjectImageUri] = useState<string | null>(null);
@@ -45,10 +45,11 @@ export default function AiWellnessLearningPage() {
     setStressScore(score);
     setAnalysisText(analysis);
     toast({ title: "Stress Analysis Complete!", description: `Your stress score is ${score}.` });
+    // Suggest mood boosters directly if score is high
     if (score > 50) {
         toast({
-            title: "Feeling Stressed?",
-            description: "Consider checking the Mood Improvement tab.",
+            title: "High Stress Detected",
+            description: "Consider getting some mood improvement suggestions below.",
             duration: 5000,
         });
     }
@@ -97,7 +98,6 @@ export default function AiWellnessLearningPage() {
     toast({ variant: "destructive", title: "Posture Analysis Issue", description: message });
   };
 
-  // Handlers for Wellness Observer
   const handleWellnessObservationComplete = (result: ObserveWellnessOutput) => {
     setWellnessObservationResult(result);
     setWellnessObservationError(null);
@@ -128,15 +128,15 @@ export default function AiWellnessLearningPage() {
               WebkitTextFillColor: 'transparent'
             }}
         >
-          AI Wellness & Learning Hub
+          MedCam AI
         </h1>
         <p className="text-muted-foreground mt-2 text-lg md:text-xl max-w-2xl mx-auto">
-          Analyze stress, observe wellness, improve posture, boost your mood, or learn spelling with our AI tools.
+          Analyze stress, observe wellness, improve posture, or engage in learning activities with our AI tools.
         </p>
       </header>
 
       <Tabs defaultValue="analyzer" className="w-full max-w-3xl">
-        <TabsList className="grid w-full grid-cols-5 rounded-lg p-1 bg-muted shadow-sm">
+        <TabsList className="grid w-full grid-cols-4 rounded-lg p-1 bg-muted shadow-sm">
           <TabsTrigger value="analyzer" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <Smile className="w-4 h-4 mr-2" /> Stress Analyzer
           </TabsTrigger>
@@ -146,11 +146,8 @@ export default function AiWellnessLearningPage() {
           <TabsTrigger value="posture" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <PersonStanding className="w-4 h-4 mr-2" /> Posture Analyzer
           </TabsTrigger>
-          <TabsTrigger value="booster" className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-md rounded-md transition-all">
-            Mood Improvement
-          </TabsTrigger>
-          <TabsTrigger value="spelling" className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-md rounded-md transition-all">
-            <ScanText className="w-4 h-4 mr-2" /> Spelling Learner
+          <TabsTrigger value="kidszone" className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-md rounded-md transition-all">
+            <ScanText className="w-4 h-4 mr-2" /> Kids Zone
           </TabsTrigger>
         </TabsList>
 
@@ -162,6 +159,12 @@ export default function AiWellnessLearningPage() {
             setIsAnalyzing={setIsAnalyzingStress} 
             currentStressScore={stressScore}
             currentAnalysisText={analysisText}
+            // MoodBooster props
+            onBoostersGenerated={handleBoostersGenerated}
+            onBoostingError={handleBoostingError}
+            isBoostingMood={isBoostingMood}
+            setIsBoostingMood={setIsBoostingMood}
+            currentBoosters={moodBoosters}
           />
         </TabsContent>
 
@@ -188,18 +191,7 @@ export default function AiWellnessLearningPage() {
           />
         </TabsContent>
 
-        <TabsContent value="booster" className="mt-6">
-          <MoodBooster
-            stressScore={stressScore}
-            onBoostersGenerated={handleBoostersGenerated}
-            onBoostingError={handleBoostingError}
-            isBoosting={isBoostingMood}
-            setIsBoosting={setIsBoostingMood}
-            currentBoosters={moodBoosters}
-          />
-        </TabsContent>
-
-        <TabsContent value="spelling" className="mt-6">
+        <TabsContent value="kidszone" className="mt-6">
           <SpellingLearner
             onObjectDetected={handleObjectDetected}
             onDetectionError={handleObjectDetectionError}
@@ -213,7 +205,7 @@ export default function AiWellnessLearningPage() {
         </TabsContent>
       </Tabs>
        <footer className="mt-12 text-center text-sm text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} AI Wellness & Learning Hub. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} MedCam AI. All rights reserved.</p>
         <p>Powered by Genkit and Next.js. Wellness features are for informational and demonstrative purposes only and not medical advice.</p>
       </footer>
     </div>

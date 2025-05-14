@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from 'react';
@@ -6,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { analyzeStress, type AnalyzeStressInput, type AnalyzeStressOutput } from '@/ai/flows/analyze-stress';
 import StressGauge from './stress-gauge';
-import { Camera, Loader2, AlertTriangle, VideoOff } from 'lucide-react';
+import MoodBooster from './mood-booster'; // Import MoodBooster
+import type { GenerateMoodBoostersOutput } from '@/ai/flows/generate-mood-boosters'; // Import type
+import { Camera, Loader2, AlertTriangle, VideoOff, Smile } from 'lucide-react';
 import Image from 'next/image';
 
 interface StressAnalyzerProps {
@@ -16,6 +19,12 @@ interface StressAnalyzerProps {
   setIsAnalyzing: (isAnalyzing: boolean) => void;
   currentStressScore: number | null;
   currentAnalysisText: string;
+  // Props for integrated MoodBooster
+  onBoostersGenerated: (boosters: GenerateMoodBoostersOutput['suggestions']) => void;
+  onBoostingError: (error: string) => void;
+  isBoostingMood: boolean;
+  setIsBoostingMood: (isBoosting: boolean) => void;
+  currentBoosters: GenerateMoodBoostersOutput['suggestions'] | null;
 }
 
 const StressAnalyzer: React.FC<StressAnalyzerProps> = ({
@@ -25,6 +34,12 @@ const StressAnalyzer: React.FC<StressAnalyzerProps> = ({
   setIsAnalyzing,
   currentStressScore,
   currentAnalysisText,
+  // MoodBooster props
+  onBoostersGenerated,
+  onBoostingError,
+  isBoostingMood,
+  setIsBoostingMood,
+  currentBoosters,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -60,7 +75,6 @@ const StressAnalyzer: React.FC<StressAnalyzerProps> = ({
   }, [stream]);
 
   useEffect(() => {
-    // Clean up stream when component unmounts or stream changes
     return () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
@@ -111,11 +125,12 @@ const StressAnalyzer: React.FC<StressAnalyzerProps> = ({
     <Card className="w-full shadow-xl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Camera className="w-6 h-6 text-primary" />
+          <Smile className="w-6 h-6 text-primary" /> {/* Changed icon to Smile */}
           Facial Stress Analysis
         </CardTitle>
         <CardDescription>
-          Use your webcam to analyze your current stress level. Position your face clearly in the frame.
+          Use your webcam to analyze your current stress level. Position your face clearly in the frame. 
+          You can also get mood improvement suggestions.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -168,9 +183,9 @@ const StressAnalyzer: React.FC<StressAnalyzerProps> = ({
           </div>
 
           {currentStressScore !== null && (
-            <div className="w-full mt-4">
+            <div className="w-full mt-4 space-y-6">
               <StressGauge score={currentStressScore} />
-              <Card className="mt-4 bg-card">
+              <Card className="bg-card">
                 <CardHeader>
                   <CardTitle className="text-xl">Analysis Details</CardTitle>
                 </CardHeader>
@@ -178,6 +193,16 @@ const StressAnalyzer: React.FC<StressAnalyzerProps> = ({
                   <p className="text-card-foreground whitespace-pre-wrap">{currentAnalysisText}</p>
                 </CardContent>
               </Card>
+              
+              {/* Integrated MoodBooster section */}
+              <MoodBooster
+                stressScore={currentStressScore}
+                onBoostersGenerated={onBoostersGenerated}
+                onBoostingError={onBoostingError}
+                isBoosting={isBoostingMood}
+                setIsBoosting={setIsBoostingMood}
+                currentBoosters={currentBoosters}
+              />
             </div>
           )}
         </div>

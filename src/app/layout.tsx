@@ -16,8 +16,8 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Wellness & Learning AI',
-  description: 'Analyze your stress, boost your mood, and learn spelling.',
+  title: 'MedCam AI',
+  description: 'AI-powered wellness and learning tools by MedCam AI.',
 };
 
 export default function RootLayout({
