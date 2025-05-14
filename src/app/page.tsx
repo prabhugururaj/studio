@@ -206,7 +206,7 @@ export default function AiWellnessLearningPage() {
       </Tabs>
        <footer className="mt-12 text-center text-sm text-muted-foreground">
         <p>&copy; {new Date().getFullYear()} MedCam AI. All rights reserved.</p>
-        <p>Powered by Genkit and Next.js. Wellness features are for informational and demonstrative purposes only and not medical advice.</p>
+        <p>Developed for AT&amp;T Hackathon by Ranjith , Sundar and Prabhu</p>
       </footer>
     </div>
   );
