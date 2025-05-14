@@ -8,11 +8,10 @@ import StressAnalyzer from '@/components/stress-analyzer';
 // MoodBooster component will be imported and used by StressAnalyzer directly
 import SpellingLearner from '@/components/spelling-learner';
 import PostureAnalyzer from '@/components/posture-analyzer';
-import WellnessObserver from '@/components/wellness-observer';
-import SignLanguageInterpreter from '@/components/sign-language-interpreter'; // New component
+import SignLanguageInterpreter from '@/components/sign-language-interpreter';
 import type { GenerateMoodBoostersOutput } from '@/ai/flows/generate-mood-boosters';
-import type { ObserveWellnessOutput } from '@/ai/flows/observe-wellness';
-import { Bot, ScanText, Smile, PersonStanding, Activity, Hand } from 'lucide-react'; // Added Hand icon
+// import type { ObserveWellnessOutput } from '@/ai/flows/observe-wellness'; // Removed
+import { Bot, ScanText, Smile, PersonStanding, Hand } from 'lucide-react'; // Removed Activity icon
 
 export default function AiWellnessLearningPage() {
   const [stressScore, setStressScore] = useState<number | null>(null);
@@ -35,10 +34,10 @@ export default function AiWellnessLearningPage() {
   const [isAnalyzingPosture, setIsAnalyzingPosture] = useState(false);
   const [postureAnalysisMessage, setPostureAnalysisMessage] = useState<string | null>(null);
   
-  // State for Wellness Observer
-  const [wellnessObservationResult, setWellnessObservationResult] = useState<ObserveWellnessOutput | null>(null);
-  const [isObservingWellness, setIsObservingWellness] = useState(false);
-  const [wellnessObservationError, setWellnessObservationError] = useState<string | null>(null);
+  // State for Wellness Observer - REMOVED
+  // const [wellnessObservationResult, setWellnessObservationResult] = useState<ObserveWellnessOutput | null>(null);
+  // const [isObservingWellness, setIsObservingWellness] = useState(false);
+  // const [wellnessObservationError, setWellnessObservationError] = useState<string | null>(null);
 
   // State for Sign Language Interpreter
   const [interpretedSignText, setInterpretedSignText] = useState<string | null>(null);
@@ -105,21 +104,22 @@ export default function AiWellnessLearningPage() {
     toast({ variant: "destructive", title: "Posture Analysis Issue", description: message });
   };
 
-  const handleWellnessObservationComplete = (result: ObserveWellnessOutput) => {
-    setWellnessObservationResult(result);
-    setWellnessObservationError(null);
-    if (result.isFaceDetected) {
-      toast({ title: "Wellness Observation Complete!", description: "Check the general observations." });
-    } else {
-      toast({ variant: "default", title: "Observation Note", description: result.observations || "Could not make an observation." });
-    }
-  };
+  // Wellness Observer handlers - REMOVED
+  // const handleWellnessObservationComplete = (result: ObserveWellnessOutput) => {
+  //   setWellnessObservationResult(result);
+  //   setWellnessObservationError(null);
+  //   if (result.isFaceDetected) {
+  //     toast({ title: "Wellness Observation Complete!", description: "Check the general observations." });
+  //   } else {
+  //     toast({ variant: "default", title: "Observation Note", description: result.observations || "Could not make an observation." });
+  //   }
+  // };
 
-  const handleWellnessObservationError = (message: string) => {
-    setWellnessObservationResult(null);
-    setWellnessObservationError(message);
-    toast({ variant: "destructive", title: "Wellness Observation Error", description: message });
-  };
+  // const handleWellnessObservationError = (message: string) => {
+  //   setWellnessObservationResult(null);
+  //   setWellnessObservationError(message);
+  //   toast({ variant: "destructive", title: "Wellness Observation Error", description: message });
+  // };
 
   const handleSignInterpreted = (text: string, imageUri: string) => {
     setInterpretedSignText(text);
@@ -157,17 +157,18 @@ export default function AiWellnessLearningPage() {
       </header>
 
       <Tabs defaultValue="analyzer" className="w-full max-w-3xl">
-        <TabsList className="grid w-full grid-cols-5 rounded-lg p-1 bg-muted shadow-sm"> {/* Changed to grid-cols-5 */}
+        <TabsList className="grid w-full grid-cols-4 rounded-lg p-1 bg-muted shadow-sm"> {/* Changed to grid-cols-4 */}
           <TabsTrigger value="analyzer" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <Smile className="w-4 h-4 mr-2" /> Stress Analyzer
           </TabsTrigger>
-           <TabsTrigger value="wellness" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
+          {/* Wellness Observer TabTrigger - REMOVED */}
+          {/* <TabsTrigger value="wellness" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <Activity className="w-4 h-4 mr-2" /> Wellness Observer
-          </TabsTrigger>
+          </TabsTrigger> */}
           <TabsTrigger value="posture" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <PersonStanding className="w-4 h-4 mr-2" /> Posture Analyzer
           </TabsTrigger>
-          <TabsTrigger value="signlearner" className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-md rounded-md transition-all"> {/* New Tab */}
+          <TabsTrigger value="signlearner" className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-md rounded-md transition-all">
             <Hand className="w-4 h-4 mr-2" /> Sign Learner
           </TabsTrigger>
           <TabsTrigger value="kidszone" className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-md rounded-md transition-all">
@@ -191,7 +192,8 @@ export default function AiWellnessLearningPage() {
           />
         </TabsContent>
 
-        <TabsContent value="wellness" className="mt-6">
+        {/* Wellness Observer TabContent - REMOVED */}
+        {/* <TabsContent value="wellness" className="mt-6">
           <WellnessObserver
             onObservationComplete={handleWellnessObservationComplete}
             onObservationError={handleWellnessObservationError}
@@ -200,7 +202,7 @@ export default function AiWellnessLearningPage() {
             observationResult={wellnessObservationResult}
             lastErrorMessage={wellnessObservationError}
           />
-        </TabsContent>
+        </TabsContent> */}
 
         <TabsContent value="posture" className="mt-6">
           <PostureAnalyzer
@@ -214,7 +216,7 @@ export default function AiWellnessLearningPage() {
           />
         </TabsContent>
 
-        <TabsContent value="signlearner" className="mt-6"> {/* New Tab Content */}
+        <TabsContent value="signlearner" className="mt-6">
           <SignLanguageInterpreter
             onSignInterpreted={handleSignInterpreted}
             onInterpretationError={handleSignInterpretationError}
