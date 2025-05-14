@@ -8,9 +8,9 @@ import StressAnalyzer from '@/components/stress-analyzer';
 import MoodBooster from '@/components/mood-booster';
 import SpellingLearner from '@/components/spelling-learner';
 import type { GenerateMoodBoostersOutput } from '@/ai/flows/generate-mood-boosters';
-import { Bot, ScanText, Smile } from 'lucide-react'; // Added ScanText
+import { Bot, ScanText, Smile } from 'lucide-react';
 
-export default function MoodBoostPage() {
+export default function AiWellnessLearningPage() {
   const [stressScore, setStressScore] = useState<number | null>(null);
   const [analysisText, setAnalysisText] = useState<string>("");
   const [moodBoosters, setMoodBoosters] = useState<GenerateMoodBoostersOutput['suggestions'] | null>(null);
@@ -88,7 +88,7 @@ export default function MoodBoostPage() {
               WebkitTextFillColor: 'transparent'
             }}
         >
-          MoodBoost & Learner AI
+          AI Wellness & Learning Hub
         </h1>
         <p className="text-muted-foreground mt-2 text-lg md:text-xl max-w-2xl mx-auto">
           Analyze stress, boost your mood, or learn spelling with our AI tools.
@@ -144,7 +144,7 @@ export default function MoodBoostPage() {
         </TabsContent>
       </Tabs>
        <footer className="mt-12 text-center text-sm text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} MoodBoost & Learner AI. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} AI Wellness & Learning Hub. All rights reserved.</p>
         <p>Powered by Genkit and Next.js.</p>
       </footer>
     </div>

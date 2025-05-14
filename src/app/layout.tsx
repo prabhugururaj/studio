@@ -16,8 +16,8 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'MoodBoost',
-  description: 'Analyze your stress and boost your mood.',
+  title: 'Wellness & Learning AI',
+  description: 'Analyze your stress, boost your mood, and learn spelling.',
 };
 
 export default function RootLayout({
